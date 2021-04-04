@@ -37,7 +37,85 @@ class Characters(db.Model):
             "edited": self.edited,
             "homeworld": self.homeworld,
             "description": self.description,
+            "url": self.url
+
+
+        }
+
+
+class Planets(db.Model):
+    # Define the structure of the planets table
+    id = db.Column(db.Integer, primary_key = True)
+    name = db.Column(db.String(30), nullable=False)
+    diameter = db.Column(db.Integer)
+    rotation_period = db.Column(db.Integer)
+    orbital_period = db.Column(db.Integer)
+    gravity = db.Column(db.String(30))
+    population = db.Column(db.Integer)
+    climate = db.Column(db.String(30))
+    terrain = db.Column(db.String(30))
+    surface_water = db.Column(db.String(30))
+    created = db.Column(db.String(30))
+    edited = db.Column(db.String(30))
+    url = db.Column(db.String(50))
+    description = db.Column(db.String(30))
+
+    def __repr__(self):
+        return '<Planets %r>' % self.name
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "rotation period": self.rotation_period,
+            "orbital period": self.orbital_period, 
+            "gravity": self.gravity,
+            "population": self.population, 
+            "climate": self.climate, 
+            "terrain": self.terrain, 
+            "surface_water": self.surface_water,
+            "created": self.created,
+            "edited": self.edited,
             "url": self.url,
+            "description": self.description
+        }
 
 
+class Starships(db.Model):
+    # Define the structure of the starships table
+    id = db.Column(db.Integer, primary_key = True)
+    model = db.Column(db.String(30))
+    starship_class = db.Column(db.String(30))
+    manufacturer = db.Column(db.String(30))
+    cost_in_credits = db.Column(db.Integer)
+    length = db.Column(db.Integer)
+    crew = db.Column(db.Integer)
+    passengers = db.Column(db.Integer)
+    max_atmosphering_speed = db.Column(db.Integer)
+    hyperdrive_rating = db.Column(db.Integer)
+    mglt = db.Column(db.Integer)
+    cargo_capacity = db.Column(db.Integer)
+    consumables = db.Column(db.String(30))
+    url = db.Column(db.String(50))
+    description = db.Column(db.String(30))
+
+    def __repr__(self):
+        return '<Starships %r>' % self.model
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "model": self.model,
+            "starship class": self.starship_class,
+            "manufacturer": self.manufacturer, 
+            "cost in credits": self.cost_in_credits,
+            "length": self.length, 
+            "crew": self.crew, 
+            "max atmosphering speed": self.max_atmosphering_speed, 
+            "hyperdrive rating": self.hyperdrive_rating,
+            "mglt": self.mglt,
+            "cargo capacity": self.cargo_capacity,
+            "consumables": self.consumables,
+            "url": self.url,
+            "description": self.description
         }
