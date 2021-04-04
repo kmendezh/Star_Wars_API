@@ -1,4 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import relationship
+from sqlalchemy import ForeignKey
 
 db = SQLAlchemy()
 
@@ -118,4 +120,36 @@ class Starships(db.Model):
             "consumables": self.consumables,
             "url": self.url,
             "description": self.description
+        }
+
+class Favorites(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, ForeignKey('user.id'))
+    object_Type = db.Column(db.String(2))
+    object_Id = db.Column(db.String(50))
+
+    def __repr__(self):
+        return '<Favorite %r>' % self.id
+
+    def serialize(self):
+        return {
+            "user id": self.user_id,
+            "object type": self.object_Type,
+            "object id": self.object_Id
+        }
+
+class User(db.Model):
+    # Define the structure of the user table
+    id = db.Column(db.Integer, primary_key = True)
+    user_name = db.Column(db.String(30), nullable=False)
+    pswd = db.Column(db.String(30), nullable=False)
+    favorites = relationship(Favorites)
+
+    def __repr__(self):
+        return '<User %r>' % self.user_name
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "user name": self.user_name
         }
