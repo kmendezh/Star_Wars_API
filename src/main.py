@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, Characters, Planets, Starships, User
+from models import db, Characters, Planets, Starships, User, Favorites
 #from models import Person
 
 app = Flask(__name__)
@@ -29,6 +29,66 @@ def handle_invalid_usage(error):
 @app.route('/')
 def sitemap():
     return generate_sitemap(app)
+
+@app.route('/get_favorites', methods=['GET'])
+def get_favorites():
+
+    # get all the Favorites
+    tmp = Favorites.query.all()
+
+    # If there are no characters stored, return a warning message
+    if len(tmp) == 0:
+        raise APIException('There are no favorites stored in the API', status_code=404)
+
+    # map the results and your list of favorites inside of the favorites variable
+    favorites = list(map(lambda x: x.serialize(), tmp))
+
+    return jsonify(favorites), 200
+
+@app.route('/get_character/<int:idx>/favorites', methods=['GET'])
+def get_favorite_by_user(idx):
+
+    # get only the user(idx)
+    tmp = Favorites.query.filter_by(user_id=idx)
+
+    # map the results and your list of people  inside of the all_people variable
+    favorites = list(map(lambda x: x.serialize(), tmp))  
+
+    return jsonify(favorites), 200
+
+@app.route('/add_favorite/<int:idx>/favorites', methods=['POST'])
+def add_favorite(idx):
+    
+    #Get the request body
+    request_body = request.get_json()
+    # Validate the data
+    if request_body["object_Type"] is None:
+        raise APIException('You need to specify the object type', status_code=400)
+    elif request_body["object_Id"] is None:
+        raise APIException('You need to specify the object Id', status_code=400)
+    #Create the new entry
+    newFav = Favorites(user_id = idx, object_Type = request_body["object_Type"],
+    object_Id = request_body["object_Id"])
+
+    db.session.add(newFav)
+    db.session.commit()     
+
+    return jsonify('Favorite added'), 200
+
+
+@app.route('/delete_favorite/<int:idx>', methods=['DELETE'])
+def delete_favorite(idx):
+    
+    # Get the favorite Id
+    fav = Favorites.query.get(idx)
+    # If the favorite ID does not exist, return an error message
+    if fav is None:
+        raise APIException('Favorite Id not found', status_code=404)
+    db.session.delete(fav)
+    db.session.commit()      
+
+    return jsonify('Favorite deleted'), 200
+
 
 @app.route('/get_users', methods=['GET'])
 def get_users():
