@@ -15,10 +15,10 @@ class Characters(db.Model):
     eye_color = db.Column(db.String(30))
     birth_year = db.Column(db.Integer)
     gender = db.Column(db.String(30))
-    created = db.Column(db.String(30))
-    edited = db.Column(db.String(30))
+    created = db.Column(db.String(100))
+    edited = db.Column(db.String(100))
     homeworld = db.Column(db.String(30))
-    description = db.Column(db.String(30))
+    description = db.Column(db.String(50))
     url = db.Column(db.String(50))
 
     def __repr__(self):
@@ -143,6 +143,7 @@ class User(db.Model):
     # Define the structure of the user table
     id = db.Column(db.Integer, primary_key = True)
     user_name = db.Column(db.String(30), nullable=False)
+    email = db.Column(db.String(40), nullable=False)
     pswd = db.Column(db.String(30), nullable=False)
     favorites = relationship(Favorites)
 
@@ -152,5 +153,6 @@ class User(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "user name": self.user_name
+            "user name": self.user_name,
+            "email": self.email
         }

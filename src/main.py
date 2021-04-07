@@ -9,7 +9,10 @@ from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
 from models import db, Characters, Planets, Starships, User, Favorites
-#from models import Person
+#from models import Characters, Planets, Starships, User, Favorites
+
+#import JWT for tokenization
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -20,6 +23,10 @@ db.init_app(app)
 CORS(app)
 setup_admin(app)
 
+# config for jwt
+# app.config["JWT_SECRET_KEY"] = "4g33ks4c4d3my"
+# jwt = JWTManager(app)
+
 # Handle/serialize errors like a JSON object
 @app.errorhandler(APIException)
 def handle_invalid_usage(error):
@@ -29,6 +36,27 @@ def handle_invalid_usage(error):
 @app.route('/')
 def sitemap():
     return generate_sitemap(app)
+
+# Login route
+@app.route('/login', methods=['POST'])
+def create_token():
+    email = request.json.get("email", None)
+    password = request.json.get("password", None)
+    
+    if email is None:
+        return jsonify({"msg": "Invalid or empty email"}), 400
+    if password is None:
+        return jsonify({"msg": "Invalid password"}), 400
+
+    user = User.query.filter_by(email=email, pswd=password).first()
+    if user is None:
+        # the user was not found on the database
+        return jsonify({"msg": "Invalid username or password"}), 401
+    else:
+        # create a new token with the user id inside
+        #access_token = create_access_token(identity=user.id)
+        access_token = "Pass"
+        return jsonify({ "msg":"ok", "token": access_token, "user_id": user.id }), 200
 
 @app.route('/get_favorites', methods=['GET'])
 def get_favorites():
