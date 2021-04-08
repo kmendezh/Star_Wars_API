@@ -126,7 +126,7 @@ class Favorites(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, ForeignKey('user.id'))
     object_Type = db.Column(db.String(2))
-    object_Id = db.Column(db.String(50))
+    object_Name = db.Column(db.String(50))
 
     def __repr__(self):
         return '<Favorite %r>' % self.id
