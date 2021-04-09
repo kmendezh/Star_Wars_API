@@ -119,13 +119,13 @@ def add_favorite(idx):
     #Get the request body
     request_body = request.get_json()
     # Validate the data
-    if request_body["object_Type"] is None:
+    if request_body["object_type"] is None:
         raise APIException('You need to specify the object type', status_code=400)
-    elif request_body["object_Name"] is None:
+    elif request_body["object_name"] is None:
         raise APIException('You need to specify the object Id', status_code=400)
     #Create the new entry
-    newFav = Favorites(user_id = idx, object_Type = request_body["object_Type"],
-    object_Name = request_body["object_Name"])
+    newFav = Favorites(user_id = idx, object_Type = request_body["object_type"],
+    object_Name = request_body["object_name"])
 
     db.session.add(newFav)
     db.session.commit()     

@@ -134,9 +134,9 @@ class Favorites(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "user id": self.user_id,
-            "object type": self.object_Type,
-            "object id": self.object_Id
+            "user_id": self.user_id,
+            "object_type": self.object_Type,
+            "object_name": self.object_Name
         }
 
 class User(db.Model):
