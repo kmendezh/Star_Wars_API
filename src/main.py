@@ -82,6 +82,55 @@ def get_fav_user_logged():
 
     return jsonify(favorites), 200
 
+# Add favorites to the todo list
+@app.route('/add_fav_to_list', methods=['POST'])
+@jwt_required()
+def add_fav_to_list():
+    # Access the identity of the current user with get_jwt_identity
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+
+    if user is None:
+        raise APIException('No User was found', status_code=400)
+
+    #Get the request body
+    request_body = request.get_json()
+    # Validate the data
+    if request_body["object_Type"] is None:
+        raise APIException('You need to specify the object type', status_code=400)
+    elif request_body["object_Name"] is None:
+        raise APIException('You need to specify the object Id', status_code=400)
+    #Create the new entry
+    newFav = Favorites(user_id = user.id, object_Type = request_body["object_Type"],
+    object_Name = request_body["object_Name"])
+
+    db.session.add(newFav)
+    db.session.commit()     
+
+    return jsonify('Favorite added'), 200
+
+# Delete favorites from the todo list
+@app.route('/delete_fav_from_list/<int:idx>', methods=['DELETE'])
+@jwt_required()
+def delete_fav_from_list(idx):
+    # Access the identity of the current user with get_jwt_identity
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+
+    if user is None:
+        raise APIException('No User was found', status_code=400)
+
+    # If an user was found, then delete the favorite from the list
+    # Get the favorite Id
+    fav = Favorites.query.get(idx)
+    # If the favorite ID does not exist, return an error message
+    if fav is None:
+        raise APIException('Favorite Id not found', status_code=404)
+    db.session.delete(fav)
+    db.session.commit()      
+
+    return jsonify('Favorite deleted'), 200
+
 ############# Endpoints that require authentication or are related with JWT ###########
 
 # Get all the favorites that are registered
@@ -119,13 +168,13 @@ def add_favorite(idx):
     #Get the request body
     request_body = request.get_json()
     # Validate the data
-    if request_body["object_type"] is None:
+    if request_body["object_Type"] is None:
         raise APIException('You need to specify the object type', status_code=400)
-    elif request_body["object_name"] is None:
+    elif request_body["object_Name"] is None:
         raise APIException('You need to specify the object Id', status_code=400)
     #Create the new entry
-    newFav = Favorites(user_id = idx, object_Type = request_body["object_type"],
-    object_Name = request_body["object_name"])
+    newFav = Favorites(user_id = idx, object_Type = request_body["object_Type"],
+    object_Name = request_body["object_Name"])
 
     db.session.add(newFav)
     db.session.commit()     
