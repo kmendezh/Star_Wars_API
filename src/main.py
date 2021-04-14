@@ -133,6 +133,37 @@ def delete_fav_from_list(idx):
 
 ############# Endpoints that require authentication or are related with JWT ###########
 
+# Register a new user
+@app.route('/add_new_user', methods=['POST'])
+def add_new_user():
+
+    # Get the request body
+    request_body = request.get_json()
+
+    # Check that the password is not empty
+    if (request_body["pswd"] == "" or request_body["user_name"] == "" or request_body["email"] == ""):
+        raise APIException('Password, username and email cannot be empty', status_code=401)
+
+    # Check if the user_name is already registered
+    tmp = User.query.filter_by(user_name=request_body["user_name"])
+    tmp = list(map(lambda x: x.serialize(), tmp))
+    print("User extracted",tmp)
+    if tmp != []:
+        raise APIException('The username is already registered', status_code=402)
+    # Check if the email is already registered
+    tmp2 = User.query.filter_by(email=request_body["email"])
+    tmp2 = list(map(lambda x: x.serialize(), tmp2))
+    if tmp2 != []:
+        raise APIException('The email is already registered', status_code=403)
+
+    # Add the new user
+    newUser = User(user_name=request_body["user_name"], email=request_body["email"],
+    pswd=request_body["pswd"])
+    db.session.add(newUser)
+    db.session.commit()
+
+    return jsonify('OK'), 200
+
 # Get all the favorites that are registered
 @app.route('/get_favorites', methods=['GET'])
 def get_favorites():
